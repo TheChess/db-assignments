@@ -166,7 +166,7 @@ async function task_1_8(db) {
     SELECT 
 	    cat.CategoryName as "CategoryName",
 	    COUNT(prod.CategoryID) as "TotalNumberOfProducts"
-    FROM Categories cat INNER JOIN Products prod ON cat.CategoryID = prod.CategoryID GROUP BY cat.CategoryID;
+    FROM Categories cat INNER JOIN Products prod ON cat.CategoryID = prod.CategoryID GROUP BY cat.CategoryID ORDER BY CategoryName;
     `);
     return result[0];
 }
