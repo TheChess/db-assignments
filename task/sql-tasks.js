@@ -44,6 +44,15 @@ async function task_1_1(db) {
  */
 async function task_1_2(db) {
     throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT
+        OrderID as "Order ID",
+        SUM(OrderDetails.Quantity*OrderDetails.UnitPrice) AS "Order Total Price",
+        SUM(OrderDetails.Quantity*OrderDetails.Discount)/SUM(OrderDetails.Quantity*OrderDetails.UnitPrice)*100 as "Total Order Discount, %"
+    FROM OrderDetails GROUP BY OrderID
+    ORDER BY OrderID DESC
+    `);
+    return result[0];
 }
 
 /**
@@ -54,7 +63,13 @@ async function task_1_2(db) {
  *
  */
 async function task_1_3(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+        CustomerID as "CustomerId",
+        CompanyName as "CompanyName"
+    FROM Customers WHERE Country = 'USA' AND Fax is NULL;
+    `);
+    return result[0];
 }
 
 /**
@@ -67,7 +82,14 @@ async function task_1_3(db) {
  *
  */
 async function task_1_4(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+        CustomerID as "Customer Id",
+        COUNT(OrderID) as "Total number of Orders",
+        ROUND(COUNT(OrderID)/(SELECT COUNT(OrderID) from Orders)*100, 5) as "% of all orders"
+    FROM Orders GROUP BY CustomerID ORDER BY COUNT(OrderID)/(SELECT COUNT(OrderID) from Orders)*100 DESC, CustomerID;
+    `);
+    return result[0];
 }
 
 /**
@@ -78,7 +100,14 @@ async function task_1_4(db) {
  *
  */
 async function task_1_5(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT
+        ProductID as "ProductId",
+        ProductName as "ProductName",
+        QuantityPerUnit as "QuantityPerUnit"
+    FROM Products WHERE LEFT(ProductName,1) BETWEEN 'A' and 'F' ORDER BY ProductName
+    `);
+    return result[0];
 }
 
 /**
@@ -91,7 +120,15 @@ async function task_1_5(db) {
  *
  */
 async function task_1_6(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+	    Products.ProductName as "ProductName",
+        Categories.CategoryName as "CategoryName",
+        Suppliers.CompanyName as "SupplierCompanyName"
+    FROM Products INNER JOIN Categories ON Products.CategoryID = Categories.CategoryID INNER JOIN Suppliers ON Suppliers.SupplierID = Products.SupplierID 
+    ORDER BY ProductName, 'SupplierCompanyName';
+    `);
+    return result[0];
 }
 
 /**
