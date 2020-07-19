@@ -49,7 +49,8 @@ async function task_1_2(db) {
             OrderID as "Order Id",
             SUM(OrderDetails.Quantity*OrderDetails.UnitPrice) AS "Order Total Price",
             ROUND(SUM(OrderDetails.Quantity*OrderDetails.Discount)/SUM(OrderDetails.Quantity*OrderDetails.UnitPrice)*100,3) as "Total Order Discount, %"
-        FROM OrderDetails GROUP BY OrderID
+        FROM OrderDetails 
+        GROUP BY OrderID
         ORDER BY OrderID DESC;
     `);
     return result[0];
@@ -316,8 +317,8 @@ async function task_1_15(db) {
             SUM(CASE WHEN MONTH(OrderDate) = 10 THEN 1 ELSE 0 END) AS "October",
             SUM(CASE WHEN MONTH(OrderDate) = 11 THEN 1 ELSE 0 END) AS "November",
             SUM(CASE WHEN MONTH(OrderDate) = 12 THEN 1 ELSE 0 END) AS "December"
-    FROM Orders 
-    WHERE YEAR(OrderDate) = 1997;
+        FROM Orders 
+        WHERE YEAR(OrderDate) = 1997;
     `);
     return result[0];
 }
