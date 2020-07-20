@@ -196,7 +196,7 @@ async function task_1_9(db) {
 	        CustomerID, 
             ContactName
         FROM Customers 
-        WHERE LEFT(ContactName,1) IN('F') AND SUBSTRING(ContactName,4,1) IN('n');
+        WHERE ContactName LIKE "F__n%";
     `);
     return result[0];
 }
@@ -393,17 +393,16 @@ async function task_1_18(db) {
  */
 async function task_1_19(db) {
     let result = await db.query(`
-        SELECT * FROM 
-            (SELECT 
-                Orders.CustomerID as "CustomerID",
-                Customers.CompanyName as "CompanyName",
-                SUM(UnitPrice*Quantity) as "TotalOrdersAmount, $"
-            FROM OrderDetails
-            INNER JOIN Orders ON OrderDetails.OrderID = Orders.OrderID 
-            INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID
-            GROUP BY Orders.CustomerID) t 
-        WHERE t.\`TotalOrdersAmount, $\` > 10000
-        ORDER BY t.\`TotalOrdersAmount, $\` DESC,t.\`CustomerID\`
+    SELECT 
+        Orders.CustomerID as "CustomerID",
+        Customers.CompanyName as "CompanyName",
+        SUM(UnitPrice*Quantity) as "TotalOrdersAmount, $"
+    FROM OrderDetails
+    INNER JOIN Orders ON OrderDetails.OrderID = Orders.OrderID 
+    INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID
+    GROUP BY Orders.CustomerID
+    HAVING \`TotalOrdersAmount, $\` > 10000
+    ORDER BY \`TotalOrdersAmount, $\` DESC, \`CustomerID\`;
     `);
     return result[0];
 }
