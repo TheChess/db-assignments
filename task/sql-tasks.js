@@ -457,25 +457,23 @@ async function task_1_21(db) {
  */
 async function task_1_22(db) {
     let result = await db.query(`
-        SELECT DISTINCT
-            CompanyName,
-            Products.ProductName AS "ProductName",
-            t.PricePerItem2 AS "PricePerItem"
-        FROM \`Customers\`
-        INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID
+    SELECT DISTINCT
+        c.CompanyName,
+        Products.ProductName AS "ProductName",
+        OrderDetails.UnitPrice AS "PricePerItem"
+    FROM \`Customers\` c
+    INNER JOIN Orders ON c.CustomerID = Orders.CustomerID
+    INNER JOIN OrderDetails ON Orders.OrderID = OrderDetails.OrderID
+    INNER JOIN Products ON Products.ProductID = OrderDetails.ProductID
+    WHERE OrderDetails.UnitPrice = (
+        SELECT
+            MAX(OrderDetails.UnitPrice) 
+        FROM Customers d
+        INNER JOIN Orders ON Orders.CustomerID = d.CustomerID
         INNER JOIN OrderDetails ON Orders.OrderID = OrderDetails.OrderID
-        INNER JOIN Products ON Products.ProductID = OrderDetails.ProductID
-        RIGHT JOIN(
-            SELECT
-                Customers.CustomerID,
-                MAX(OrderDetails.UnitPrice) AS "PricePerItem2"
-            FROM \`Customers\`
-            INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID
-            INNER JOIN OrderDetails ON Orders.OrderID = OrderDetails.OrderID
-            INNER JOIN Products ON Products.ProductID = OrderDetails.ProductID
-            GROUP BY Customers.CustomerID) t 
-        ON t.CustomerID = Customers.CustomerID AND OrderDetails.UnitPrice = t.PricePerItem2
-        ORDER BY \`PricePerItem\` DESC, CompanyName, \`ProductName\` ASC;
+        WHERE d.CompanyName = c.CompanyName
+        )
+    ORDER BY \`PricePerItem\` DESC, CompanyName, \`ProductName\`;
     `);
     return result[0];
 }
