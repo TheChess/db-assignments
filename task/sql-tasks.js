@@ -466,7 +466,7 @@ async function task_1_22(db) {
             FROM Customers 
             INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID
             INNER JOIN OrderDetails ON Orders.OrderID = OrderDetails.OrderID
-            GROUP BY Customers.CompanyName) t
+         GROUP BY Customers.CompanyName, Customers.CustomerID) t
          INNER JOIN Orders o ON t.CustomerID = o.CustomerID
          INNER JOIN OrderDetails od ON t.PricePerItem = od.UnitPrice AND o.OrderID = od.OrderID
          INNER JOIN Products p ON p.ProductID = od.ProductID
